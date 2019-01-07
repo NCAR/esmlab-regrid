@@ -87,6 +87,24 @@ grids:
         type: tripole
         lateral_dims: [2400, 3600]
 
+
+  POP_tx0.1v2_62lev:
+    lateral_dims: [2400, 3600]
+    vertical_dims: 62
+    type: curvilinear
+    open_vertical_grid:
+      vert_grid_file: grid_data/tx0.1v3_vert_grid
+      depth_units: cm
+      depth_coord_name: z_t
+    gen_grid_file:
+      method: gen_POP_grid_file
+      kwargs:
+        horiz_grid_fname: /glade/p/cesmdata/cseg/inputdata/ocn/pop/tx0.1v2/grid/horiz_grid_200709.ieeer8
+        topography_fname: /glade/p/cesmdata/cseg/inputdata/ocn/pop/tx0.1v2/grid/topography_200709.ieeei4
+        region_mask_fname: /glade/p/cesmdata/cseg/inputdata/ocn/pop/tx0.1v2/grid/region_mask_20080702.ieeei4
+        type: tripole
+        lateral_dims: [2400, 3600]
+        
   POP_tx0.1v3:
     lateral_dims: [2400, 3600]
     vertical_dims: 62
