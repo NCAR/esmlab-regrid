@@ -2,7 +2,8 @@ import os
 import logging
 import yaml
 
-logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+logger.setLevel(level=logging.INFO)
 
 dir_root = os.path.dirname(os.path.abspath(__file__))
 config_file = os.path.join(dir_root, 'grids.yml')

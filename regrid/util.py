@@ -11,39 +11,42 @@ from netCDF4 import default_fillvals
 from . import config
 from . import fill_POP_core
 
-def fill_ocean_POP(da_in, mask, ltripole = False):
+logger = logging.getLogger(__name__)
+
+
+def fill_ocean_POP(da_in, mask, ltripole=False):
     '''Fill missing values on the POP grid by interative smoothing operation.'''
 
     non_lateral_dims = da_in.dims[:-2]
 
     if not non_lateral_dims:
-        da_in = fill_ocean_POP_single_layer(da_in,mask,ltripole)
+        da_in = fill_ocean_POP_single_layer(da_in, mask, ltripole)
 
     elif non_lateral_dims == ('time',):
-        if mask.dims != ('nlat','nlon'):
+        if mask.dims != ('nlat', 'nlon'):
             raise ValueError('Mask dims do not match data')
 
         for l in range(da_in.shape[0]):
-            da_in.values[l,:,:] = fill_ocean_POP_single_layer(da_in[l,:,:],
-                                                              mask[:,:],
-                                                              ltripole)
+            da_in.values[l, :, :] = fill_ocean_POP_single_layer(da_in[l, :, :],
+                                                                mask[:, :],
+                                                                ltripole)
 
     elif non_lateral_dims == ('z_t',):
-        if mask.dims != ('z_t','nlat','nlon'):
+        if mask.dims != ('z_t', 'nlat', 'nlon'):
             raise ValueError('Mask dims do not match data')
 
         for k in range(da_in.shape[0]):
-            da_in.values[k,:,:] = fill_ocean_POP_single_layer(da_in[k,:,:],
-                                                              mask[k,:,:],
-                                                              ltripole)
-    elif non_lateral_dims == ('time','z_t',):
-        if mask.dims != ('z_t','nlat','nlon'):
+            da_in.values[k, :, :] = fill_ocean_POP_single_layer(da_in[k, :, :],
+                                                                mask[k, :, :],
+                                                                ltripole)
+    elif non_lateral_dims == ('time', 'z_t',):
+        if mask.dims != ('z_t', 'nlat', 'nlon'):
             raise ValueError('Mask dims do not match data')
 
         for l in range(da_in.shape[0]):
             for k in range(da_in.shape[1]):
-                da_in.values[l,k,:,:] = fill_ocean_POP_single_layer(
-                    da_in[l,:,:],mask[k,:,:],
+                da_in.values[l, k, :, :] = fill_ocean_POP_single_layer(
+                    da_in[l, :, :], mask[k, :, :],
                     ltripole)
     else:
         raise ValueError(f'Unknown dims: {non_lateral_dims}')
@@ -51,7 +54,7 @@ def fill_ocean_POP(da_in, mask, ltripole = False):
     return da_in
 
 
-def fill_ocean_POP_single_layer(da_in, mask, ltripole = False):
+def fill_ocean_POP_single_layer(da_in, mask, ltripole=False):
 
     tol = 1.0e-4
 
@@ -65,18 +68,18 @@ def fill_ocean_POP_single_layer(da_in, mask, ltripole = False):
 
     add_attrs = {'note': 'fill_ocean_POP applied'}
 
-    fill_POP_core.fill_pop_core(var = var_pass,
-                                fillmask = fillmask.T,
-                                msv = msv,
-                                tol = tol,
-                                ltripole = ltripole)
+    fill_POP_core.fill_pop_core(var=var_pass,
+                                fillmask=fillmask.T,
+                                msv=msv,
+                                tol=tol,
+                                ltripole=ltripole)
 
-    var_pass[var_pass==msv] = np.nan
+    var_pass[var_pass == msv] = np.nan
 
     return xr.DataArray(var_pass.T.astype(da_in.dtype),
                         dims=da_in.dims,
                         coords=da_in.coords,
-                        attrs = da_in.attrs.update(add_attrs),
+                        attrs=da_in.attrs.update(add_attrs),
                         encoding=da_in.encoding)
 
 
@@ -88,7 +91,7 @@ def mask_3d_POP(grid):
     scrip_grid_file = gen_grid_file(grid)
 
     ds = xr.open_dataset(scrip_grid_file)
-    ds = xr.merge((ds,open_vertical_grid(grid)))
+    ds = xr.merge((ds, open_vertical_grid(grid)))
     KMT = ds.KMT
     z_t = ds.z_t
 
@@ -97,15 +100,16 @@ def mask_3d_POP(grid):
     ni = KMT.shape[1]
 
     MASK = (
-        xr.DataArray(np.arange(0,len(z_t)),dims=('z_t')) *
-        xr.DataArray(np.ones((nk,nj,ni)),dims=('z_t','nlat','nlon'),
-                     coords={'z_t':z_t})
-        )
+        xr.DataArray(np.arange(0, len(z_t)), dims=('z_t')) *
+        xr.DataArray(np.ones((nk, nj, ni)), dims=('z_t', 'nlat', 'nlon'),
+                     coords={'z_t': z_t})
+    )
 
-    MASK = MASK.where(MASK <= KMT-1)
-    MASK.values = np.where(MASK.notnull(),True,False)
+    MASK = MASK.where(MASK <= KMT - 1)
+    MASK.values = np.where(MASK.notnull(), True, False)
 
     return MASK
+
 
 def _ncl(ncl_script):
     '''interface to NCL.'''
@@ -121,16 +125,16 @@ def _ncl(ncl_script):
         stdout = stdout.decode('UTF-8')
         stderr = stderr.decode('UTF-8')
         if stdout:
-            logging.error('NCL error stdout: '+stdout)
+            logger.error('NCL error stdout: ' + stdout)
         if stderr:
-            logging.error('NCL error stderr: '+stderr)
+            logger.error('NCL error stderr: ' + stderr)
 
         raise OSError('NCL failed.')
 
 
 def gen_POP_grid_file(grid, grid_out_fname,
                       horiz_grid_fname, topography_fname, region_mask_fname,
-                      type, lateral_dims,clobber=False):
+                      type, lateral_dims, clobber=False):
     '''Generate POP SCRIP grid files.'''
 
     os.environ['HORIZ_GRID_FNAME'] = horiz_grid_fname
@@ -163,7 +167,7 @@ def open_vertical_grid(grid):
     vert_grid_file = info['vert_grid_file']
 
     if not os.path.isfile(vert_grid_file):
-        vert_grid_file = os.path.join(config.dir_root,vert_grid_file)
+        vert_grid_file = os.path.join(config.dir_root, vert_grid_file)
         if not os.path.isfile(vert_grid_file):
             raise OSError(f'Missing {vert_grid_file}')
 
@@ -171,15 +175,15 @@ def open_vertical_grid(grid):
     depth_units = info['depth_units']
 
     tmp = np.loadtxt(vert_grid_file)
-    dz = xr.DataArray(tmp[:,0],dims=(depth_coord_name),
-                      attrs = {'long_name': 'layer thickness',
-                               'units': depth_units})
+    dz = xr.DataArray(tmp[:, 0], dims=(depth_coord_name),
+                      attrs={'long_name': 'layer thickness',
+                             'units': depth_units})
 
-    depth_edges = np.concatenate(([0.],np.cumsum(dz)))
+    depth_edges = np.concatenate(([0.], np.cumsum(dz)))
     depth = xr.DataArray(depth_edges[0:-1] + 0.5 * dz,
                          dims=(depth_coord_name),
-                         attrs = {'long_name': 'depth',
-                                  'units': depth_units})
+                         attrs={'long_name': 'depth',
+                                'units': depth_units})
     return xr.Dataset({depth_coord_name: depth, 'dz': dz})
 
 
@@ -227,7 +231,7 @@ def gen_grid_file(grid, clobber=False):
     regrid_method = info['gen_grid_file']['method']
     kwargs = info['gen_grid_file']['kwargs']
 
-    logging.info(f'generating grid file {grid_out_fname}')
+    logger.info(f'generating grid file {grid_out_fname}')
     gen_grid_method = globals()[regrid_method]
     gen_grid_method(grid, grid_out_fname, **kwargs, clobber=clobber)
 
