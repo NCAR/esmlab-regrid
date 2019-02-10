@@ -8,7 +8,7 @@ import xarray as xr
 
 from netCDF4 import default_fillvals
 
-from . import config
+from .config import known_grids, dir_root
 from . import fill_POP_core
 
 logger = logging.getLogger(__name__)
@@ -137,6 +137,8 @@ def gen_POP_grid_file(grid, grid_out_fname,
                       type, lateral_dims, clobber=False):
     '''Generate POP SCRIP grid files.'''
 
+    dir_grid_files = esmlab.get_options()["gridfile_directory"]
+
     os.environ['HORIZ_GRID_FNAME'] = horiz_grid_fname
     os.environ['TOPOGRAPHY_FNAME'] = topography_fname
     os.environ['REGION_MASK_FNAME'] = region_mask_fname
@@ -146,7 +148,7 @@ def gen_POP_grid_file(grid, grid_out_fname,
     os.environ['NX'] = '{0:d}'.format(lateral_dims[1])
 
     os.environ['GRID_OUT_FNAME'] = grid_out_fname
-    os.environ['VERT_GRID_FILE_OUT'] = f'{config.dir_grid_files}/{grid}_vert.nc'
+    os.environ['VERT_GRID_FILE_OUT'] = f'{dir_grid_files}/{grid}_vert.nc'
 
     ncl_script = os.path.join(os.path.dirname(__file__),
                               'ncl_lib/gen_POP_grid_file.ncl')
@@ -157,8 +159,8 @@ def gen_POP_grid_file(grid, grid_out_fname,
 def open_vertical_grid(grid):
     '''Return an `xarray.Dataset` with the vertical grid of "grid".'''
 
-    assert grid in config.known_grids, f'Unknown grid: {grid}'
-    info = config.known_grids[grid]
+    assert grid in known_grids, f'Unknown grid: {grid}'
+    info = known_grids[grid]
 
     assert 'open_vertical_grid' in info, f'No vertical grid defined for {grid}'
     info = info['open_vertical_grid']
@@ -167,7 +169,7 @@ def open_vertical_grid(grid):
     vert_grid_file = info['vert_grid_file']
 
     if not os.path.isfile(vert_grid_file):
-        vert_grid_file = os.path.join(config.dir_root, vert_grid_file)
+        vert_grid_file = os.path.join(dir_root, vert_grid_file)
         if not os.path.isfile(vert_grid_file):
             raise OSError(f'Missing {vert_grid_file}')
 
@@ -221,13 +223,15 @@ def gen_rectilinear_grid_file(grid, grid_out_fname,
 def gen_grid_file(grid, clobber=False):
     '''Generate a SCRIP grid file for "grid"'''
 
-    grid_out_fname = f'{config.dir_grid_files}/{grid}.nc'
+    dir_grid_files = esmlab.get_options()["gridfile_directory"]
+
+    grid_out_fname = f'{dir_grid_files}/{grid}.nc'
     if os.path.exists(grid_out_fname) and not clobber:
         return grid_out_fname
 
-    assert grid in config.known_grids, f'Unknown grid: {grid}'
+    assert grid in known_grids, f'Unknown grid: {grid}'
 
-    info = config.known_grids[grid]
+    info = known_grids[grid]
     regrid_method = info['gen_grid_file']['method']
     kwargs = info['gen_grid_file']['kwargs']
 
@@ -240,5 +244,5 @@ def gen_grid_file(grid, clobber=False):
 
 def gen_all_grids(clobber=False):
     '''Generate all known grids.'''
-    for grid in config.known_grids.keys():
+    for grid in known_grids.keys():
         gen_grid_file(grid, clobber=clobber)
