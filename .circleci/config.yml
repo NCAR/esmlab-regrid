@@ -29,26 +29,26 @@ default-job: &default-job
           - "/usr/local/pkgs"
 
 
-
+jobs:
   "python-3.6":
     <<: *default-job
     environment:
       PYTHON: "3.6"
-      ENV_NAME: "esmlab-dev"
+      ENV_NAME: "dev"
       TEST_SCRIPT: "run-checks.sh"
 
   "python-3.7":
     <<: *default-job
     environment:
       PYTHON: "3.7"
-      ENV_NAME: "esmlab-dev"
+      ENV_NAME: "dev"
       TEST_SCRIPT: "run-checks.sh"
 
   "linting":
     <<: *default-job
     environment:
       PYTHON: "3.7"
-      ENV_NAME: "esmlab-dev"
+      ENV_NAME: "dev"
       TEST_SCRIPT: "run-linter.sh"
 
 
@@ -58,7 +58,7 @@ default-job: &default-job
 
     environment:
       PYTHON: "3.7"
-      ENV_NAME: "esmlab-dev"
+      ENV_NAME: "dev"
 
     steps:
 

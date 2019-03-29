@@ -7,8 +7,6 @@ include requirements.txt
 recursive-include esmlab_regrid *.yaml
 recursive-include tests *.py
 recursive-include tests *.nc
-recursive-include tests *yml
-recursive-include tests *yaml
 recursive-include esmlab_regrid *.py
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
