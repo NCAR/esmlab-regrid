@@ -1,4 +1,4 @@
-name: esmlab-dev
+name: dev
 channels:
   - conda-forge
 dependencies:
