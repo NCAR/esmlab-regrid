@@ -1,6 +1,6 @@
-regrid:  
+regrid:
+  gridfile_directory: ~/.esmlab/esmlab-grid-files
   grids:
-
     POP_gx3v7:
       lateral_dims: [ 116,  100]
       vertical_dims: 60
