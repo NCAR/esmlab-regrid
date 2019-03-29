@@ -1,19 +1,13 @@
-import logging
 import os
 
 import esmlab
 import yaml
 
-logger = logging.getLogger(__name__)
-logger.setLevel(level=logging.INFO)
+fn = os.path.join(os.path.dirname(__file__), "regrid.yaml")
+esmlab.config.ensure_file(source=fn, comment=False)
 
-dir_root = os.path.dirname(os.path.abspath(__file__))
-grid_defitions_file = esmlab.get_options()['grid_defitions_file']
+with open(fn) as f:
+    defaults = yaml.safe_load(f)
 
-if not os.path.isfile(grid_defitions_file):
-    raise OSError('config file is missing')
-
-with open(grid_defitions_file, 'r') as f:
-    regrid_database = yaml.load(f)
-
-known_grids = regrid_database['grids']
+esmlab.config.update(dask.config.config, defaults, priority="old")
+esmlab.config.refresh()
