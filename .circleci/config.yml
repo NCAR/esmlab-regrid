@@ -29,7 +29,7 @@ default-job: &default-job
           - "/usr/local/pkgs"
 
 
-
+jobs:
   "python-3.6":
     <<: *default-job
     environment:
