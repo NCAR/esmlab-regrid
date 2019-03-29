@@ -1,15 +1,13 @@
-import os
-from subprocess import Popen, PIPE
-
 import logging
+import os
+from subprocess import PIPE, Popen
 
 import numpy as np
 import xarray as xr
-
 from netCDF4 import default_fillvals
 
-from .config import known_grids, dir_root
 from . import fill_POP_core
+from .config import dir_root, known_grids
 
 logger = logging.getLogger(__name__)
 
@@ -27,27 +25,27 @@ def fill_ocean_POP(da_in, mask, ltripole=False):
             raise ValueError('Mask dims do not match data')
 
         for l in range(da_in.shape[0]):
-            da_in.values[l, :, :] = fill_ocean_POP_single_layer(da_in[l, :, :],
-                                                                mask[:, :],
-                                                                ltripole)
+            da_in.values[l, :, :] = fill_ocean_POP_single_layer(
+                da_in[l, :, :], mask[:, :], ltripole
+            )
 
     elif non_lateral_dims == ('z_t',):
         if mask.dims != ('z_t', 'nlat', 'nlon'):
             raise ValueError('Mask dims do not match data')
 
         for k in range(da_in.shape[0]):
-            da_in.values[k, :, :] = fill_ocean_POP_single_layer(da_in[k, :, :],
-                                                                mask[k, :, :],
-                                                                ltripole)
-    elif non_lateral_dims == ('time', 'z_t',):
+            da_in.values[k, :, :] = fill_ocean_POP_single_layer(
+                da_in[k, :, :], mask[k, :, :], ltripole
+            )
+    elif non_lateral_dims == ('time', 'z_t'):
         if mask.dims != ('z_t', 'nlat', 'nlon'):
             raise ValueError('Mask dims do not match data')
 
         for l in range(da_in.shape[0]):
             for k in range(da_in.shape[1]):
                 da_in.values[l, k, :, :] = fill_ocean_POP_single_layer(
-                    da_in[l, :, :], mask[k, :, :],
-                    ltripole)
+                    da_in[l, :, :], mask[k, :, :], ltripole
+                )
     else:
         raise ValueError(f'Unknown dims: {non_lateral_dims}')
 
@@ -68,19 +66,19 @@ def fill_ocean_POP_single_layer(da_in, mask, ltripole=False):
 
     add_attrs = {'note': 'fill_ocean_POP applied'}
 
-    fill_POP_core.fill_pop_core(var=var_pass,
-                                fillmask=fillmask.T,
-                                msv=msv,
-                                tol=tol,
-                                ltripole=ltripole)
+    fill_POP_core.fill_pop_core(
+        var=var_pass, fillmask=fillmask.T, msv=msv, tol=tol, ltripole=ltripole
+    )
 
     var_pass[var_pass == msv] = np.nan
 
-    return xr.DataArray(var_pass.T.astype(da_in.dtype),
-                        dims=da_in.dims,
-                        coords=da_in.coords,
-                        attrs=da_in.attrs.update(add_attrs),
-                        encoding=da_in.encoding)
+    return xr.DataArray(
+        var_pass.T.astype(da_in.dtype),
+        dims=da_in.dims,
+        coords=da_in.coords,
+        attrs=da_in.attrs.update(add_attrs),
+        encoding=da_in.encoding,
+    )
 
 
 def mask_3d_POP(grid):
@@ -99,10 +97,8 @@ def mask_3d_POP(grid):
     nj = KMT.shape[0]
     ni = KMT.shape[1]
 
-    MASK = (
-        xr.DataArray(np.arange(0, len(z_t)), dims=('z_t')) *
-        xr.DataArray(np.ones((nk, nj, ni)), dims=('z_t', 'nlat', 'nlon'),
-                     coords={'z_t': z_t})
+    MASK = xr.DataArray(np.arange(0, len(z_t)), dims=('z_t')) * xr.DataArray(
+        np.ones((nk, nj, ni)), dims=('z_t', 'nlat', 'nlon'), coords={'z_t': z_t}
     )
 
     MASK = MASK.where(MASK <= KMT - 1)
@@ -114,9 +110,7 @@ def mask_3d_POP(grid):
 def _ncl(ncl_script):
     '''interface to NCL.'''
 
-    cmd = ' && '.join(['module load intel/17.0.1',
-                       'module load ncl/6.4.0',
-                       'ncl ' + ncl_script])
+    cmd = ' && '.join(['module load intel/17.0.1', 'module load ncl/6.4.0', 'ncl ' + ncl_script])
 
     p = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True)
     stdout, stderr = p.communicate()
@@ -132,12 +126,20 @@ def _ncl(ncl_script):
         raise OSError('NCL failed.')
 
 
-def gen_POP_grid_file(grid, grid_out_fname,
-                      horiz_grid_fname, topography_fname, region_mask_fname,
-                      type, lateral_dims, clobber=False):
+def gen_POP_grid_file(
+    grid,
+    grid_out_fname,
+    horiz_grid_fname,
+    topography_fname,
+    region_mask_fname,
+    type,
+    lateral_dims,
+    clobber=False,
+):
     '''Generate POP SCRIP grid files.'''
 
-    dir_grid_files = esmlab.get_options()["gridfile_directory"]
+    # dir_grid_files = esmlab.get_options()['gridfile_directory']
+    dir_grid_files = {}
 
     os.environ['HORIZ_GRID_FNAME'] = horiz_grid_fname
     os.environ['TOPOGRAPHY_FNAME'] = topography_fname
@@ -150,8 +152,7 @@ def gen_POP_grid_file(grid, grid_out_fname,
     os.environ['GRID_OUT_FNAME'] = grid_out_fname
     os.environ['VERT_GRID_FILE_OUT'] = f'{dir_grid_files}/{grid}_vert.nc'
 
-    ncl_script = os.path.join(os.path.dirname(__file__),
-                              'ncl_lib/gen_POP_grid_file.ncl')
+    ncl_script = os.path.join(os.path.dirname(__file__), 'ncl_lib/gen_POP_grid_file.ncl')
 
     _ncl(ncl_script)
 
@@ -177,21 +178,24 @@ def open_vertical_grid(grid):
     depth_units = info['depth_units']
 
     tmp = np.loadtxt(vert_grid_file)
-    dz = xr.DataArray(tmp[:, 0], dims=(depth_coord_name),
-                      attrs={'long_name': 'layer thickness',
-                             'units': depth_units})
+    dz = xr.DataArray(
+        tmp[:, 0],
+        dims=(depth_coord_name),
+        attrs={'long_name': 'layer thickness', 'units': depth_units},
+    )
 
-    depth_edges = np.concatenate(([0.], np.cumsum(dz)))
-    depth = xr.DataArray(depth_edges[0:-1] + 0.5 * dz,
-                         dims=(depth_coord_name),
-                         attrs={'long_name': 'depth',
-                                'units': depth_units})
+    depth_edges = np.concatenate(([0.0], np.cumsum(dz)))
+    depth = xr.DataArray(
+        depth_edges[0:-1] + 0.5 * dz,
+        dims=(depth_coord_name),
+        attrs={'long_name': 'depth', 'units': depth_units},
+    )
     return xr.Dataset({depth_coord_name: depth, 'dz': dz})
 
 
-def gen_latlon_grid_file(grid, grid_out_fname,
-                         grid_type, dlon, dlat, left_lon_corner,
-                         clobber=False):
+def gen_latlon_grid_file(
+    grid, grid_out_fname, grid_type, dlon, dlat, left_lon_corner, clobber=False
+):
     '''Generate latlon grid file.'''
 
     os.environ['DLON'] = '{0:f}'.format(dlon)
@@ -200,22 +204,18 @@ def gen_latlon_grid_file(grid, grid_out_fname,
     os.environ['GRID_TYPE'] = grid_type
     os.environ['GRID_OUT_FNAME'] = grid_out_fname
 
-    ncl_script = os.path.join(os.path.dirname(__file__),
-                              'ncl_lib/gen_latlon_grid_file.ncl')
+    ncl_script = os.path.join(os.path.dirname(__file__), 'ncl_lib/gen_latlon_grid_file.ncl')
 
     _ncl(ncl_script)
 
 
-def gen_rectilinear_grid_file(grid, grid_out_fname,
-                              latlon_file,
-                              clobber=False):
+def gen_rectilinear_grid_file(grid, grid_out_fname, latlon_file, clobber=False):
     '''Generate rectilinear grid file.'''
 
     os.environ['LATLON_FILE'] = latlon_file
     os.environ['GRID_OUT_FNAME'] = grid_out_fname
 
-    ncl_script = os.path.join(os.path.dirname(__file__),
-                              'ncl_lib/gen_rectilinear_grid_file.ncl')
+    ncl_script = os.path.join(os.path.dirname(__file__), 'ncl_lib/gen_rectilinear_grid_file.ncl')
 
     _ncl(ncl_script)
 
@@ -223,8 +223,8 @@ def gen_rectilinear_grid_file(grid, grid_out_fname,
 def gen_grid_file(grid, clobber=False):
     '''Generate a SCRIP grid file for "grid"'''
 
-    dir_grid_files = esmlab.get_options()["gridfile_directory"]
-
+    # dir_grid_files = esmlab.get_options()['gridfile_directory']
+    dir_grid_files = {}
     grid_out_fname = f'{dir_grid_files}/{grid}.nc'
     if os.path.exists(grid_out_fname) and not clobber:
         return grid_out_fname

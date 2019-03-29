@@ -1,14 +1,14 @@
-import os
 import logging
-import yaml
+import os
 
 import esmlab
+import yaml
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=logging.INFO)
 
 dir_root = os.path.dirname(os.path.abspath(__file__))
-grid_defitions_file = esmlab.get_options()["grid_defitions_file"]
+grid_defitions_file = esmlab.get_options()['grid_defitions_file']
 
 if not os.path.isfile(grid_defitions_file):
     raise OSError('config file is missing')

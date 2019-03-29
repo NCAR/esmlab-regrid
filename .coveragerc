@@ -1,0 +1,6 @@
+[run]
+omit =
+    tests/*.py
+    esmlab_regrid/_version.py
+    versioneer.py
+    setup.py

@@ -7,7 +7,7 @@ begin
   left_lon_corner = stringtofloat(getenv("LEFT_LON_CORNER"))
   grid_out_fname = getenv("GRID_OUT_FNAME")
   grid_type = getenv("GRID_TYPE")
-  
+
   opt = True
   opt@ForceOverwrite = True
   opt@Debug = True
