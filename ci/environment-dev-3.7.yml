@@ -1,0 +1,37 @@
+name: esmlab-dev
+channels:
+  - conda-forge
+dependencies:
+  - autopep8
+  - black
+  - bottleneck
+  - codecov
+  - dask
+  - distributed
+  - esmpy
+  - flake8
+  - git
+  - ipykernel
+  - isort
+  - make
+  - matplotlib
+  - nbsphinx
+  - netcdf4
+  - numpy
+  - numpydoc
+  - pytest
+  - pytest-cov
+  - python=3.7
+  - recommonmark
+  - scipy
+  - sphinx_rtd_theme
+  - sphinx>=1.6
+  - tornado
+  - xesmf
+  - zarr
+  - xarray>=0.12
+  - pip:
+    - pytest-lazy-fixture
+    - sphinx_copybutton
+    - pytest-xdist
+    - git+https://github.com/NCAR/esmlab.git

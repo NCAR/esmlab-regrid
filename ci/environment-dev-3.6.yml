@@ -1,0 +1,25 @@
+name: esmlab-dev
+channels:
+  - conda-forge
+dependencies:
+  - bottleneck
+  - codecov
+  - dask
+  - distributed
+  - esmpy
+  - git
+  - ipykernel
+  - matplotlib
+  - netcdf4
+  - numpy
+  - pytest
+  - pytest-cov
+  - python=3.6
+  - scipy
+  - xesmf
+  - zarr
+  - xarray>=0.12
+  - pip:
+    - pytest-lazy-fixture
+    - pytest-xdist
+    - git+https://github.com/NCAR/esmlab.git

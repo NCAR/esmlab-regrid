@@ -5,3 +5,5 @@ esmpy
 xesmf
 scipy
 bottleneck
+esmlab
+numpy
