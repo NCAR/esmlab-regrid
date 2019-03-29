@@ -34,4 +34,4 @@ dependencies:
     - pytest-lazy-fixture
     - sphinx_copybutton
     - pytest-xdist
-    - git+https://github.com/NCAR/esmlab.git
+    - git+https://github.com/andersy005/esmlab.git@fix-time-manager
