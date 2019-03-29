@@ -1,6 +1,7 @@
 import itertools
 
 import esmlab
+import numpy as np
 import pytest
 import xarray as xr
 from esmlab.datasets import open_dataset
@@ -46,3 +47,10 @@ def test_regrid_regrid(grid_src, grid_dst, method, data_in, xr_type):
     dao = R(ds.t_10)
     assert isinstance(dao, xr_type)
     assert dao.data.shape == (1, 192, 288)
+
+    with pytest.raises(NotImplementedError):
+        dao = R(ds)
+
+    with pytest.raises(ValueError):
+        a = np.ones(10)
+        dao = R(a)
