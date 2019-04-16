@@ -22,4 +22,4 @@ dependencies:
   - pip:
     - pytest-lazy-fixture
     - pytest-xdist
-    - git+https://github.com/andersy005/esmlab.git@fix-time-manager
+    - git+https://github.com/NCAR/esmlab.git
