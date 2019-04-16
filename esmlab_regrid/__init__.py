@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 """Top-level module for esmlab-regrid."""
 
+from pkg_resources import DistributionNotFound, get_distribution
 
 from . import config
-from ._version import get_versions
 from .core import Regridder as regridder
 
-__version__ = get_versions()['version']
-del get_versions
+try:
+    __version__ = get_distribution(__name__).version
+except DistributionNotFound:
+    # package is not installed
+    pass

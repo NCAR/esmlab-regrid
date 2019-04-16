@@ -10,5 +10,3 @@ recursive-include tests *.nc
 recursive-include esmlab_regrid *.py
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
-include versioneer.py
-include esmlab_regrid/_version.py

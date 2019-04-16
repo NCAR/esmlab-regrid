@@ -6,8 +6,6 @@ from os.path import exists
 
 from setuptools import find_packages, setup
 
-import versioneer
-
 if exists('requirements.txt'):
     with open('requirements.txt') as f:
         install_requires = f.read().strip().split('\n')
@@ -35,6 +33,6 @@ setup(
     license='Apache 2.0',
     zip_safe=False,
     keywords='esmlab-regrid',
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
+    use_scm_version=True,
+    setup_requires=['setuptools_scm', 'setuptools>=30.3.0', 'setuptools_scm_git_archive'],
 )
