@@ -4,6 +4,5 @@ cftime
 esmpy
 xesmf
 scipy
-bottleneck
 numpy
 esmlab
