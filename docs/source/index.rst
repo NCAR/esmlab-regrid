@@ -9,6 +9,7 @@ Esmlab.regrid
    :caption: Contents:
 
    install
+   notebooks/tutorial
    api
    contributing
    changelog

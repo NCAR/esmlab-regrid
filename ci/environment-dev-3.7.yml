@@ -8,6 +8,7 @@ dependencies:
   - codecov
   - dask
   - distributed
+  - esmlab
   - esmpy
   - flake8
   - git
@@ -27,11 +28,9 @@ dependencies:
   - sphinx_rtd_theme
   - sphinx>=1.6
   - tornado
-  - xesmf
-  - zarr
   - xarray>=0.12
+  - xesmf
   - pip:
     - pytest-lazy-fixture
     - sphinx_copybutton
     - pytest-xdist
-    - git+https://github.com/NCAR/esmlab.git

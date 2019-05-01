@@ -6,6 +6,7 @@ dependencies:
   - codecov
   - dask
   - distributed
+  - esmlab
   - esmpy
   - git
   - ipykernel
@@ -16,10 +17,8 @@ dependencies:
   - pytest-cov
   - python=3.6
   - scipy
-  - xesmf
-  - zarr
   - xarray>=0.12
+  - xesmf
   - pip:
     - pytest-lazy-fixture
     - pytest-xdist
-    - git+https://github.com/NCAR/esmlab.git

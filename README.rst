@@ -1,7 +1,6 @@
-===============================
-esmlab-regrid
-===============================
-
+==============
+ESMLab-regrid
+==============
 .. image:: https://img.shields.io/circleci/project/github/NCAR/esmlab-regrid/master.svg?style=for-the-badge&logo=circleci
     :target: https://circleci.com/gh/NCAR/esmlab-regrid/tree/master
 
@@ -22,6 +21,23 @@ esmlab-regrid
     :alt: Conda Version
 
 
-Regridding utitilies. See documentation_ for more information.
+ESMLab regridding utitilies. See documentation_ for more information.
 
 .. _documentation: https://esmlab-regrid.readthedocs.io/en/latest/
+
+
+Installation
+------------
+
+ESMLab-regrid can be installed from PyPI with pip:
+
+.. code-block:: bash
+
+    pip install esmlab-regrid
+
+
+It is also available from `conda-forge` for conda installations:
+
+.. code-block:: bash
+
+    conda install -c conda-forge esmlab-regrid

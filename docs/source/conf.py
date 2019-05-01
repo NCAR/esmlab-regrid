@@ -11,6 +11,7 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+import datetime
 import os
 import sys
 
@@ -64,8 +65,9 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'esmlab-regrid'
-copyright = u'2018 onwards, University Corporation for Atmospheric Research'
+current_year = datetime.datetime.now().year
+project = u'ESMLab Regrid'
+copyright = u'2018-{}, University Corporation for Atmospheric Research'.format(current_year)
 author = u'Earth System Informatics Team'
 
 # The version info for the project you're documenting, acts as replacement
@@ -73,7 +75,7 @@ author = u'Earth System Informatics Team'
 # the built documents.
 #
 # The short X.Y version.
-version = esmlab_regrid.__version__
+version = esmlab_regrid.__version__.split('+')[0]
 # The full version, including alpha/beta/rc tags.
 release = esmlab_regrid.__version__
 
@@ -87,7 +89,7 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'notebooks/.ipynb_checkpoints', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
@@ -173,7 +175,7 @@ texinfo_documents = [
 
 ipython_execlines = [
     'import numpy as np',
-    'import pandas as pd',
+    'import esmlab',
     'import xarray as xr',
     'import esmlab_regrid',
 ]
