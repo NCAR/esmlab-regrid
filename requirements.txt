@@ -6,3 +6,4 @@ xesmf
 scipy
 bottleneck
 numpy
+esmlab

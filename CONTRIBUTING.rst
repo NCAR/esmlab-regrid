@@ -1,20 +1,29 @@
-============================
-Contributing to esmlab-regrid
-============================
+=====================
+Contribution Guide
+=====================
+
+Interested in helping build esmlab-regrid? Have code from your work that
+you believe others will find useful?  Have a few minutes to tackle an issue?
 
 Contributions are highly welcomed and appreciated.  Every little help counts,
 so do not hesitate!
 
+The following sections cover some general guidelines
+regarding development in esmlab-regrid for maintainers and contributors.
+Nothing here is set in stone and can't be changed.
+Feel free to suggest improvements or changes in the workflow.
+
+
+
 .. contents:: Contribution links
    :depth: 2
+
 
 
 .. _submitfeedback:
 
 Feature requests and feedback
 -----------------------------
-
-Do you like esmlab-regrid?  Share some love on Twitter or in your blog posts!
 
 We'd also like to hear about your propositions and suggestions.  Feel free to
 `submit them as issues <https://github.com/NCAR/esmlab-regrid>`_ and:
@@ -24,6 +33,7 @@ We'd also like to hear about your propositions and suggestions.  Feel free to
 
 
 .. _reportbugs:
+
 
 Report bugs
 -----------
@@ -90,14 +100,29 @@ Preparing Pull Requests
    fine to use ``esmlab-regrid`` as your fork repository name because it will live
    under your user.
 
-#. Clone your fork locally using `git <https://git-scm.com/>`_ and create a branch::
+#. Clone your fork locally using `git <https://git-scm.com/>`_, connect your repository
+   to the upstream (main project), and create a branch::
 
     $ git clone git@github.com:YOUR_GITHUB_USERNAME/esmlab-regrid.git
     $ cd esmlab-regrid
+    $ git remote add upstream git@github.com:NCAR/esmlab-regrid.git
 
     # now, to fix a bug or add feature create your own branch off "master":
 
     $ git checkout -b your-bugfix-feature-branch-name master
+
+   If you need some help with Git, follow this quick start
+   guide: https://git.wiki.kernel.org/index.php/QuickStart
+
+#. Install dependencies into a new conda environment::
+
+    $ conda env update -f ci/environment-dev-3.7.yml
+    $ conda activate esmlab-regrid-dev
+
+#. Make an editable install of esmlab-regrid by running::
+
+    $ pip install -e .
+
 
 
 #. Install `pre-commit <https://pre-commit.com>`_ and its hook on the esmlab-regrid repo::
@@ -109,20 +134,34 @@ Preparing Pull Requests
 
    https://pre-commit.com/ is a framework for managing and maintaining multi-language pre-commit hooks
    to ensure code-style and code formatting is consistent.
-#. Install dependencies into a new conda environment::
 
-    $ conda env update -f ci/environment-dev-3.7.yml
+    Now you have an environment called ``esmlab-regrid-dev`` that you can work in.
+    You’ll need to make sure to activate that environment next time you want
+    to use it after closing the terminal or your system.
 
 
 #. Run all the tests
 
    Now running tests is as simple as issuing this command::
 
-    $ conda activate esmlab-regrid-dev
-    $ pytest --junitxml=test-reports/junit.xml --cov=./ --verbose
+    $ pytest --junitxml=test-reports/junit.xml --cov=./
 
 
    This command will run tests via the "pytest" tool against Python 3.7.
+
+
+
+#. Create a new changelog entry in ``CHANGELOG.rst``:
+
+   - The entry should be entered as:
+
+    <description> (``:pr:`#<pull request number>```) ```<author's names>`_``
+
+    where ``<description>`` is the description of the PR related to the change and ``<pull request number>`` is
+    the pull request number and ``<author's names>`` are your first and last names.
+
+   - Add yourself to list of authors at the end of ``CHANGELOG.rst`` file if not there yet, in alphabetical order.
+
 
 #. You can now edit your local working copy and run the tests again as necessary. Please follow PEP-8 for naming.
 
@@ -133,11 +172,10 @@ Preparing Pull Requests
     $ git commit -a -m "<commit message>"
     $ git push -u
 
-
 #. Finally, submit a pull request through the GitHub website using this data::
 
     head-fork: YOUR_GITHUB_USERNAME/esmlab-regrid
     compare: your-branch-name
 
     base-fork: NCAR/esmlab-regrid
-    base: master
+    base: master          # if it's a bugfix or feature
