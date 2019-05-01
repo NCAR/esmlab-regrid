@@ -1,7 +1,6 @@
-===============================
+==============
 ESMLab-regrid
-===============================
-
+==============
 .. image:: https://img.shields.io/circleci/project/github/NCAR/esmlab-regrid/master.svg?style=for-the-badge&logo=circleci
     :target: https://circleci.com/gh/NCAR/esmlab-regrid/tree/master
 
