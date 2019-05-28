@@ -113,10 +113,7 @@ class Regridder(object):
         self,
         data_in,
         renormalize=True,
-        apply_mask=None,
-        interp_coord=None,
-        post_method=None,
-        post_method_kwargs=None,
+        apply_mask=True,
     ):
         """ Perform regridding on an `xarray.DataArray` or `xarray.Dataset`.
 
@@ -133,18 +130,8 @@ class Regridder(object):
                    to use a mapping file computed at the surface at each
                    successive depth level: setting `renormalize=True` will
                    ensure correct handling of missing values.
-        interp_coord : dict, optional
-                   Dictionary specifying dimension names an new coordinates;
-                   passed to `xarray.DataArray.interp`.
-                   New coordinate can be a scalar, array-like or DataArray.
-                   If DataArrays are passed as new coordates, their dimensions
-                   are used for the broadcasting.
         apply_mask : bool, optional [default=False]
                   Apply a missing-values mask after regridding operations.
-        post_method : callable, optional
-                 If provided, call this function on DataArray after regridding.
-        post_method_kwargs : dict, optional
-                  Keyword arguments to pass to `post_method`.
 
         Returns
         -------
@@ -158,9 +145,6 @@ class Regridder(object):
                 data_in,
                 renormalize=renormalize,
                 apply_mask=apply_mask,
-                interp_coord=interp_coord,
-                post_method=post_method,
-                post_method_kwargs=post_method_kwargs,
             )
 
         elif isinstance(data_in, xr.Dataset):
@@ -173,10 +157,7 @@ class Regridder(object):
         self,
         da_in,
         renormalize=True,
-        interp_coord=None,
         apply_mask=None,
-        post_method=None,
-        post_method_kwargs=None,
     ):
         # Pull data, dims and coords from incoming DataArray
         data_src = da_in.data
@@ -215,33 +196,9 @@ class Regridder(object):
         else:
             da_out.attrs['history'] = new_history
 
-        # Interpolate coordinates (i.e., vertical)
-        # Setup to copy lowest/hightest values  where extrapolation is needed
-        if interp_coord:
-            try:
-                for dim, new_coord in interp_coord.items():
-                    if dim in da_out.dims:
-                        extrap_values = (da_out.isel(**{dim: 0}), da_out.isel(**{dim: -1}))
-
-                        da_out = da_out.interp(
-                            coords={dim: new_coord},
-                            method='linear',
-                            assume_sorted=True,
-                            kwargs={'fill_value': extrap_values},
-                        )
-
-            except Exception as exc:
-                raise exc
 
         # Appy a missing-values mask
-        if apply_mask is not None:
-            if apply_mask.dims != da_in.dims:
-                warn(f'Masking {apply_mask.dims}; data have dims: {da_in.dims}')
-
-            da_out = da_out.where(apply_mask)
-
-        # Apply a post_method
-        if post_method is not None:
-            da_out = post_method(da_out, **post_method_kwargs)
+        if apply_mask:
+            da_out = da_out.where(self.grid_ref_dst.grid.mask[0].T)
 
         return da_out
