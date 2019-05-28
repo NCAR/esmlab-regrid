@@ -196,8 +196,7 @@ class Regridder(object):
         else:
             da_out.attrs['history'] = new_history
 
-
-        # Appy a missing-values mask
+        # Apply a missing-values mask
         if apply_mask:
             da_out = da_out.where(self.grid_ref_dst.grid.mask[0].T)
 
