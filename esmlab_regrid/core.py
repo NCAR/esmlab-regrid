@@ -88,7 +88,7 @@ class Regridder(object):
         weights_dir = f'{grid_file_dir}/weights'
         os.makedirs(weights_dir, exist_ok=True)
         self.weight_file = (
-            f'{weights_dir}/{self.name_grid_src}_to_{self.name_grid_dst}_{self.method}'
+            f'{weights_dir}/{self.name_grid_src}_to_{self.name_grid_dst}_{self.method}.nc'
         )
 
         if os.path.exists(self.weight_file):
