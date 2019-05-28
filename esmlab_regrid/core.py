@@ -15,7 +15,7 @@ class _GridRef(object):
     def __init__(self, name, overwrite_existing=False):
         self.name = name
         grid_file_dir = esmlab.config.get('regrid.gridfile-directory')
-        print(grid_file_dir)
+
         self.scrip_grid_file = f'{grid_file_dir}/{self.name}.nc'
         self._gen_grid_file(overwrite_existing=overwrite_existing)
         self._esmf_grid_from_scrip()
