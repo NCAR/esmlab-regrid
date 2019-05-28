@@ -157,7 +157,7 @@ class Regridder(object):
         self,
         da_in,
         renormalize=True,
-        apply_mask=None,
+        apply_mask=True,
     ):
         # Pull data, dims and coords from incoming DataArray
         data_src = da_in.data
