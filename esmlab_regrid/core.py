@@ -176,12 +176,15 @@ class Regridder(object):
 
         # Renormalize to include non-missing data_src
         if renormalize:
+            old_err_settings = np.seterr(invalid='ignore')
             ones_dst = xe.smm.apply_weights(
                 self.A, ones_src, self.grid_ref_dst.shape[1], self.grid_ref_dst.shape[0]
             )
             ones_dst = np.where(ones_dst > 0.0, ones_dst, np.nan)
             data_dst = data_dst / ones_dst
             data_dst = np.where(ones_dst > 0.0, data_dst, np.nan)
+            np.seterr(**old_err_settings)
+
 
         # reform into xarray.DataArray
         da_out = xr.DataArray(
