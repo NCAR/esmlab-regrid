@@ -13,12 +13,13 @@ dependencies:
   - matplotlib
   - netcdf4
   - numpy
+  - pip
   - pytest
   - pytest-cov
   - python=3.6
   - scipy
   - xarray>=0.12
-  - xesmf
+  - xesmf=0.1.1
   - pip:
     - pytest-lazy-fixture
     - pytest-xdist
