@@ -109,12 +109,7 @@ class Regridder(object):
 
         xe.backend.esmf_regrid_finalize(regrid)
 
-    def __call__(
-        self,
-        data_in,
-        renormalize=True,
-        apply_mask=True,
-    ):
+    def __call__(self, data_in, renormalize=True, apply_mask=True):
         """ Perform regridding on an `xarray.DataArray` or `xarray.Dataset`.
 
         Parameters
@@ -141,11 +136,7 @@ class Regridder(object):
         """
 
         if isinstance(data_in, xr.DataArray):
-            return self.regrid_dataarray(
-                data_in,
-                renormalize=renormalize,
-                apply_mask=apply_mask,
-            )
+            return self.regrid_dataarray(data_in, renormalize=renormalize, apply_mask=apply_mask)
 
         elif isinstance(data_in, xr.Dataset):
             raise NotImplementedError('Regridding method does support xarray Datasets yet!')
@@ -153,12 +144,7 @@ class Regridder(object):
         else:
             raise ValueError(f'Data: {data_in} must be an xarray Dataset or DataArray')
 
-    def regrid_dataarray(
-        self,
-        da_in,
-        renormalize=True,
-        apply_mask=True,
-    ):
+    def regrid_dataarray(self, da_in, renormalize=True, apply_mask=True):
         # Pull data, dims and coords from incoming DataArray
         data_src = da_in.data
         non_lateral_dims = da_in.dims[:-2]
@@ -184,7 +170,6 @@ class Regridder(object):
             data_dst = data_dst / ones_dst
             data_dst = np.where(ones_dst > 0.0, data_dst, np.nan)
             np.seterr(**old_err_settings)
-
 
         # reform into xarray.DataArray
         da_out = xr.DataArray(
